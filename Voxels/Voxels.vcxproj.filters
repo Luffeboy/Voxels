@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Graphics\Renderer.h" />
+    <ClCompile Include="Graphics\Renderer.cpp" />
+    <ClCompile Include="Graphics\GameWindow.cpp" />
+    <ClCompile Include="Graphics\Shader.cpp" />
+    <ClCompile Include="ChunkData.cpp" />
+    <ClCompile Include="IncludeOpenGL.h" />
+    <ClCompile Include="Graphics\Vertex.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Graphics\Texture.cpp" />
+    <ClCompile Include="Graphics\TextureReader.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Game\WorldGeneration\PerlinNoise.cpp" />
+    <ClCompile Include="Game\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphics\GameWindow.h" />
+    <ClInclude Include="Graphics\Shader.h" />
+    <ClInclude Include="Graphics\Vertex.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="ChunkData.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Graphics\TextureReader.h" />
+    <ClInclude Include="Graphics\Texture.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="External\stb_image.h" />
+    <ClInclude Include="Game\WorldGeneration\PerlinNoise.h" />
+    <ClInclude Include="Game\World.h" />
+  </ItemGroup>
+</Project>

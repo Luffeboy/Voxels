@@ -61,6 +61,12 @@ BlockType ChunkData::GetBlock(Vector3Int pos)
 	return chunk->Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)];
 }
 
+void ChunkData::DeleteBlock(const Vector3Int& pos)
+{
+	Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)] = BlockType::Air;
+}
+
+
 void ChunkData::CreateMesh()
 {
 	{

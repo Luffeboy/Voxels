@@ -173,8 +173,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CertainDefines.h" />
     <ClInclude Include="ChunkData.h" />
     <ClInclude Include="External\stb_image.h" />
+    <ClInclude Include="Game\RaycastHit.h" />
     <ClInclude Include="Game\World.h" />
     <ClInclude Include="Game\WorldGeneration\PerlinNoise.h" />
     <ClInclude Include="Graphics\GameWindow.h" />

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <queue>
+#include "RaycastHit.h"
 
 constexpr int MaxChunkGenerationThreads = 3;
 class World
@@ -46,9 +47,14 @@ private:
 		}
 	};
 public:
+	void UnloadChunk(const Vector3Int& position) const;
 	void LoadChunk(const Vector3Int& position) const
 	{
 		std::lock_guard<std::mutex> guard(m_loadChunksMutex);
+		LoadChunkNoMutex(position);
+	}
+	inline void LoadChunkNoMutex(const Vector3Int& position) const
+	{
 		int64_t key = position.GetValueForCompairing();
 		auto it = m_Chunks.find(key);
 		if (it == m_Chunks.end())
@@ -64,6 +70,7 @@ public:
 		//m_Chunks[key].CreateMesh();
 	}
 	void LoadChunkWithMeshNow(const Vector3Int& position) const;
+	void UnloadChunkRegion(const Vector3Int& start, const Vector3Int& end) const;
 	void LoadChunkRegionWithMesh(const Vector3Int& start, const Vector3Int& end) const
 	{
 		//Time::Timer initialLoadChunkTimer("initial load chunks");
@@ -85,14 +92,19 @@ public:
 				}
 		//queueForAsyncMeshCreationTimer.Stop();
 	}
+	BlockType GetBlockData(const Vector3& pos) const;
+	RaycastHit Raycast(const Vector3& startPos, const Vector3& rayDir, float maxDist = 10.0f) const;
+	void RemoveBlock(const PositionAndChunk& pos) const;
 
+	
 	static const World* ActiveWorld() { return m_ActiveWorld; }
 	const std::map<int64_t, ChunkData>& Chunks() const { return m_Chunks; }
 	inline ChunkData* GetChunk(const Vector3Int& position) const // assumes the chunk is allready loaded in
 	{
+		std::lock_guard<std::mutex> guard(m_loadChunksMutex);
 		int64_t key = position.GetValueForCompairing();
 		if (m_Chunks.find(key) == m_Chunks.end())
-			LoadChunk(position);
+			LoadChunkNoMutex(position);
 		return &m_Chunks[key];
 	}
 
@@ -140,6 +152,7 @@ public:
 			DeleteMarkedThreads();
 		}
 	}
+
 	void AddChunkMeshToQueue(const Vector3Int& pos,
 		ChunkVertex* normalMeshData, size_t normalMeshVertexCount, unsigned int* normalIndicies, size_t normalIndiciesCount,
 		ChunkVertex* transparentMeshData, size_t transparentMeshVertexCount, unsigned int* transparentIndicies, size_t transparentIndiciesCount) const
@@ -148,6 +161,7 @@ public:
 		m_chunkMeshDataReadyToBeUploaded.push_back(new ChunkPositionAndMeshData(pos, normalMeshData, normalMeshVertexCount, normalIndicies, normalIndiciesCount,
 			transparentMeshData, transparentMeshVertexCount, transparentIndicies, transparentIndiciesCount));
 	}
+
 private:
 	struct ThreadWithId
 	{

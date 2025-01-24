@@ -3,15 +3,7 @@
 #include "Graphics/Vertex.h"
 #include "IncludeOpenGL.h"
 #include "Game/WorldGeneration/PerlinNoise.h"
-
-//128
-constexpr int ChunkWidth = 64;
-constexpr int ChunkHeight = ChunkWidth;
-constexpr float BlockSize = 1.0f;
-constexpr float BlockTexturesPerRow = 6.0f;
-constexpr int BlocksInTexture = 5;
-//#define xyzToChunkIndex(x, y, z) x + y * ChunkWidth + z * (ChunkWidth * ChunkHeight)
-#define xyzToChunkIndex(x, y, z) (z) + (y) * ChunkWidth + (x) * (ChunkWidth * ChunkHeight)
+#include "CertainDefines.h"
 
 enum BlockType
 {
@@ -58,7 +50,7 @@ public: // per object stuff
 	//std::vector<Vertex> verticies;
 	ChunkData() { std::cout << "ChunkData default constructor called... why?" << std::endl; }
 
-	ChunkData(Vector3 offset) : Blocks(new BlockType[ChunkWidth * ChunkHeight * ChunkWidth]), m_vertexCount(0), m_indeciesCount(0), m_offset(offset), m_offsetInt({(int)offset.x, (int)offset.y, (int)offset.z})
+	ChunkData(Vector3 offset) : Blocks(new BlockType[ChunkWidth * ChunkHeight * ChunkWidth]), m_vertexCount(0), m_indeciesCount(0), m_offset(offset), m_offsetInt(offset.ToVector3Int())
 	{
 		m_offsetForRendering = m_offset;
 		m_offsetForRendering.x *= ChunkWidth * BlockSize;
@@ -188,6 +180,11 @@ public: // per object stuff
 	}
 
 	BlockType GetBlock(Vector3Int pos);
+	void DeleteBlock(const Vector3Int& pos);
+	inline BlockType GetBlockInChunk(Vector3Int pos)
+	{
+		return Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)];
+	}
 
 	static void SetAttribArray()
 	{

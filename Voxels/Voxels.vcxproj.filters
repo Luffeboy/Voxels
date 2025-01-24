@@ -31,5 +31,7 @@
     <ClInclude Include="External\stb_image.h" />
     <ClInclude Include="Game\WorldGeneration\PerlinNoise.h" />
     <ClInclude Include="Game\World.h" />
+    <ClInclude Include="Game\RaycastHit.h" />
+    <ClInclude Include="CertainDefines.h" />
   </ItemGroup>
 </Project>

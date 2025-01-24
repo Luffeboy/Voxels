@@ -1,10 +1,43 @@
 #pragma once
-#define DegToRad 0.0174533
+#include "CertainDefines.h"
 #include <math.h>
 #include <iostream>
 #include "Time.h"
+struct Vector3Int
+{
+public:
+	int32_t x, y, z;
+	Vector3Int() : x(0), y(0), z(0) {}
+	Vector3Int(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
+	//Vector3Int(Vector3 v) : x((int)v.x), y((int)v.y), z((int)v.z) {}
+	int64_t GetValueForCompairing() const
+	{
+		int64_t tempX = (x & 0xFFFFF) | ((static_cast<unsigned>(x) >> 31) << 20);
+		int64_t tempY = (y & 0xFFFFF) | ((static_cast<unsigned>(y) >> 31) << 20);
+		int64_t tempZ = (z & 0xFFFFF) | ((static_cast<unsigned>(z) >> 31) << 20);
+		return (tempX << 42) | (tempY << 21) | tempZ;
+		//return (x * 2) + (y * 3) + (z * 5);
+	}
 
-
+	bool operator == (const Vector3Int& other)
+	{
+		return x == other.x && y == other.y && z == other.z;
+	}
+	bool operator != (const Vector3Int& other)
+	{
+		return x != other.x || y != other.y || z != other.z;
+	}
+	bool operator<(const Vector3Int& other) const noexcept
+	{
+		// logic here
+		return GetValueForCompairing() < other.GetValueForCompairing(); // for example
+	}
+	bool operator>(const Vector3Int& other) const noexcept
+	{
+		// logic here
+		return GetValueForCompairing() > other.GetValueForCompairing(); // for example
+	}
+};
 struct Vector3
 {
 public:
@@ -14,10 +47,14 @@ public:
 	Vector3() : x(0), y(0), z(0) {}
 	Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-	inline float Length()
+	inline Vector3Int ToVector3Int() const
+	{
+		return { (int)x, (int)y, (int)z };
+	}
+
+	inline float Length() const
 	{
 		return sqrt(x * x + y * y + z * z);
-
 	}
 	void Normalize()
 	{
@@ -27,6 +64,13 @@ public:
 		x /= len;
 		y /= len;
 		z /= len;
+	}
+	Vector3 Normalized() const
+	{
+		float len = Length();
+		if (len == 0.0f)
+			return {0, 0, 0};
+		return { x / len, y / len, z / len };
 	}
 	float Dot(const Vector3& other) const
 	{
@@ -65,37 +109,27 @@ public:
 	}
 };
 
-struct Vector3Int
+
+struct PositionAndChunk
 {
-public:
-	int32_t x, y, z;
-
-	int64_t GetValueForCompairing() const
+	Vector3Int Position;
+	Vector3Int Chunk;
+	PositionAndChunk() : Position({0, 0, 0}), Chunk({ 0,0,0 }) {}
+	PositionAndChunk(Vector3Int pos, Vector3Int chunk) : Position(pos), Chunk(chunk) {}
+	PositionAndChunk(const Vector3& pos)
 	{
-		int64_t tempX = (x & 0xFFFFF) | ((static_cast<unsigned>(x) >> 31) << 20);
-		int64_t tempY = (y & 0xFFFFF) | ((static_cast<unsigned>(y) >> 31) << 20);
-		int64_t tempZ = (z & 0xFFFFF) | ((static_cast<unsigned>(z) >> 31) << 20);
-		return (tempX << 42) | (tempY << 21) | tempZ;
-		//return (x * 2) + (y * 3) + (z * 5);
-	}
-
-	bool operator == (const Vector3Int& other)
-	{
-		return x == other.x && y == other.y && z == other.z;
-	}
-	bool operator != (const Vector3Int& other)
-	{
-		return x != other.x || y != other.y || z != other.z;
-	}
-	bool operator<(const Vector3Int& other) const noexcept
-	{
-		// logic here
-		return GetValueForCompairing() < other.GetValueForCompairing(); // for example
-	}
-	bool operator>(const Vector3Int& other) const noexcept
-	{
-		// logic here
-		return GetValueForCompairing() > other.GetValueForCompairing(); // for example
+		// find chunk
+		Chunk = pos.ToVector3Int();
+		if (Chunk.x < 0) Chunk.x -= ChunkWidth - 1;
+		if (Chunk.y < 0) Chunk.y -= ChunkHeight - 1;
+		if (Chunk.z < 0) Chunk.z -= ChunkWidth - 1;
+		Chunk.x /= ChunkWidth;
+		Chunk.y /= ChunkHeight;
+		Chunk.z /= ChunkWidth;
+		Position = pos.ToVector3Int();
+		Position.x -= Chunk.x * ChunkWidth + (Chunk.x < 0 ? 1 : 0);
+		Position.y -= Chunk.y * ChunkHeight + (Chunk.y < 0 ? 1 : 0);
+		Position.z -= Chunk.z * ChunkWidth + (Chunk.z < 0 ? 1 : 0);
 	}
 };
 struct Vector2

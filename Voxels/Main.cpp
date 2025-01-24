@@ -107,7 +107,7 @@ int main()
     //    }
     //}
 
-    World::ActiveWorld()->LoadChunkRegionWithMesh({ 0, -1, 0 }, { 3, 3, 3 });
+    World::ActiveWorld()->LoadChunkRegionWithMesh({ 0, -1, 0 }, { 1, 2, 1 });
     //World::ActiveWorld()->LoadChunkRegionWithMesh({ 0, -1, 0 }, { 10, 10, 10 });
     //World::ActiveWorld()->LoadChunkWithMeshNow({ 0, 0, 0 });
     //World::ActiveWorld()->LoadChunk({ 0, 0, 1 });
@@ -131,7 +131,18 @@ int main()
         Time::UpdateDeltaTime();
         // update stuff
         moveCamera(gameCamera);
-        //gameCamera.m_transform.Position.x+=.1f;
+        if (Input::GetKeyPressed(GLFW_KEY_ENTER))
+        {
+            RaycastHit rayHit = World::ActiveWorld()->Raycast(gameCamera.m_transform.Position, gameCamera.m_transform.Forward(), 100);
+            std::cout << "Rayhit: " << rayHit.hit << std::endl;
+            if (rayHit.hit)
+            {
+                std::cout << "Rayhit chunk: " << rayHit.pos.Chunk.x << " " << rayHit.pos.Chunk.y << " " << rayHit.pos.Chunk.z << std::endl;
+                std::cout << "Rayhit position: " << rayHit.pos.Position.x << " " << rayHit.pos.Position.y << " " << rayHit.pos.Position.z << std::endl;
+                World::ActiveWorld()->RemoveBlock(rayHit.pos);
+
+            }
+        }
         
         // render stuff
         World::ActiveWorld()->UpdateQueuedMeshDataToGPU();

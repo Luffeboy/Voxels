@@ -120,9 +120,9 @@ struct PositionAndChunk
 	{
 		// find chunk
 		Chunk = pos.ToVector3Int();
-		if (Chunk.x < 0) Chunk.x -= ChunkWidth - 1;
-		if (Chunk.y < 0) Chunk.y -= ChunkHeight - 1;
-		if (Chunk.z < 0) Chunk.z -= ChunkWidth - 1;
+		if (Chunk.x < 0) Chunk.x -= ChunkWidth;
+		if (Chunk.y < 0) Chunk.y -= ChunkHeight;
+		if (Chunk.z < 0) Chunk.z -= ChunkWidth;
 		Chunk.x /= ChunkWidth;
 		Chunk.y /= ChunkHeight;
 		Chunk.z /= ChunkWidth;
@@ -364,6 +364,10 @@ public:
 
 	Matrix4 TransformationMatrix;
 
+	/// <summary>
+	/// Automatically multiplies by deltatime
+	/// </summary>
+	/// <param name="amount"></param>
 	void Rotate(const Vector3& amount)
 	{
 		m_rotation.x += amount.x * Time::DeltaTime;
@@ -374,6 +378,10 @@ public:
 		m_rotation.z += amount.z * Time::DeltaTime;
 		CalculateForward();
 	}
+	/// <summary>
+	/// Automatically multiplies by deltatime
+	/// </summary>
+	/// <param name="amount"></param>
 	void MoveForward(const Vector3& amount)
 	{
 		Vector3 deltaPos = m_forward * amount.z;
@@ -386,6 +394,7 @@ public:
 	}
 	/// <summary>
 	/// MoveForward, but "up" is (0, 1, 0), no matter what
+	/// Also, automatically multiplies by deltatime
 	/// </summary>
 	/// <param name="amount"></param>
 	void MoveForwardAbsoluteUp(const Vector3& amount)

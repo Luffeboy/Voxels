@@ -122,25 +122,33 @@ public:
 					const ChunkData& chunk = m_Chunks[key];
 
 					// normal
-					glBindBuffer(GL_ARRAY_BUFFER, chunk.Buffer());
-					glBufferData(GL_ARRAY_BUFFER, chunkPositionAndMeshData.normalMeshVertexCount * (sizeof(ChunkVertex)), chunkPositionAndMeshData.normalMeshData, GL_STATIC_DRAW);
+					if (chunkPositionAndMeshData.normalMeshVertexCount != 0)
+					{
+						chunk.TryGenBuffer();
+						glBindBuffer(GL_ARRAY_BUFFER, chunk.Buffer());
+						glBufferData(GL_ARRAY_BUFFER, chunkPositionAndMeshData.normalMeshVertexCount * (sizeof(ChunkVertex)), chunkPositionAndMeshData.normalMeshData, GL_STATIC_DRAW);
 
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.IndexBuffer());
-					glBufferData(GL_ELEMENT_ARRAY_BUFFER, chunkPositionAndMeshData.normalIndiciesCount * sizeof(unsigned int), chunkPositionAndMeshData.normalIndicies, GL_STATIC_DRAW);
+						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.IndexBuffer());
+						glBufferData(GL_ELEMENT_ARRAY_BUFFER, chunkPositionAndMeshData.normalIndiciesCount * sizeof(unsigned int), chunkPositionAndMeshData.normalIndicies, GL_STATIC_DRAW);
 
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-					glBindBuffer(GL_ARRAY_BUFFER, 0);
+						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+						glBindBuffer(GL_ARRAY_BUFFER, 0);
+					}
 
 
 					// transparent
-					glBindBuffer(GL_ARRAY_BUFFER, chunk.TransparentBuffer());
-					glBufferData(GL_ARRAY_BUFFER, chunkPositionAndMeshData.transparentMeshVertexCount * (sizeof(ChunkVertex)), chunkPositionAndMeshData.transparentMeshData, GL_STATIC_DRAW);
+					if (chunkPositionAndMeshData.transparentMeshVertexCount != 0)
+					{
+						chunk.TryGenTransparentBuffer();
+						glBindBuffer(GL_ARRAY_BUFFER, chunk.TransparentBuffer());
+						glBufferData(GL_ARRAY_BUFFER, chunkPositionAndMeshData.transparentMeshVertexCount * (sizeof(ChunkVertex)), chunkPositionAndMeshData.transparentMeshData, GL_STATIC_DRAW);
 
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.TransparentIndexBuffer());
-					glBufferData(GL_ELEMENT_ARRAY_BUFFER, chunkPositionAndMeshData.transparentIndiciesCount * sizeof(unsigned int), chunkPositionAndMeshData.transparentIndicies, GL_STATIC_DRAW);
+						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.TransparentIndexBuffer());
+						glBufferData(GL_ELEMENT_ARRAY_BUFFER, chunkPositionAndMeshData.transparentIndiciesCount * sizeof(unsigned int), chunkPositionAndMeshData.transparentIndicies, GL_STATIC_DRAW);
 
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-					glBindBuffer(GL_ARRAY_BUFFER, 0);
+						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+						glBindBuffer(GL_ARRAY_BUFFER, 0);
+					}
 					//uploadToGPUTimer.Stop();
 				}
 

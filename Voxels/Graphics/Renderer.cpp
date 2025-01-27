@@ -136,57 +136,32 @@ void Renderer::DrawChunk(const ChunkData& chunk)
 	unsigned int stride = sizeof(ChunkVertex);
 	// opauge
 
-	glBindBuffer(GL_ARRAY_BUFFER, chunk.Buffer());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.IndexBuffer());
+	if (chunk.VertexCount() != 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, chunk.Buffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.IndexBuffer());
+		chunk.SetAttribArray();
+		//glDrawArrays(GL_TRIANGLES, 0, (unsigned int)chunk.VertexCount()); // old, outdated, one might even say depricated.
+		glDrawElements(GL_TRIANGLES, (unsigned int)chunk.IndeciesCount(), GL_UNSIGNED_INT, nullptr);
+		chunk.UnsetAttribArray();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (const void*)(offsetof(ChunkVertex, Uv)));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribIPointer(2, 1, GL_INT, stride, (const void*)(offsetof(ChunkVertex, m_Color)));
-
-	//glEnableVertexAttribArray(3);
-	//glVertexAttribIPointer(3, 1, GL_INT, stride, (const void*)(sizeof(Vector3) + sizeof(Vector2) + sizeof(int)));
-
-	//glDrawArrays(GL_TRIANGLES, 0, (unsigned int)chunk.VertexCount()); // old, outdated, one might even say depricated.
-	glDrawElements(GL_TRIANGLES, (unsigned int)chunk.IndeciesCount(), GL_UNSIGNED_INT, nullptr);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	//glDisableVertexAttribArray(3);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// transparent
-
-	glBindBuffer(GL_ARRAY_BUFFER, chunk.TransparentBuffer());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.TransparentIndexBuffer());
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (const void*)(offsetof(ChunkVertex, Uv)));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribIPointer(2, 1, GL_INT, stride, (const void*)(offsetof(ChunkVertex, m_Color)));
-
-	//glEnableVertexAttribArray(3);
-	//glVertexAttribIPointer(3, 1, GL_INT, stride, (const void*)(sizeof(Vector3) + sizeof(Vector2) + sizeof(int)));
-
-	//glDrawArrays(GL_TRIANGLES, 0, (unsigned int)chunk.VertexCount()); // old, outdated, one might even say depricated.
-	glDrawElements(GL_TRIANGLES, (unsigned int)chunk.TransparentIndeciesCount(), GL_UNSIGNED_INT, nullptr);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	//glDisableVertexAttribArray(3);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (chunk.TransparentVertexCount() != 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, chunk.TransparentBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.TransparentIndexBuffer());
+		chunk.SetAttribArray();
+		//glDrawArrays(GL_TRIANGLES, 0, (unsigned int)chunk.VertexCount()); // old, outdated, one might even say depricated.
+		glDrawElements(GL_TRIANGLES, (unsigned int)chunk.TransparentIndeciesCount(), GL_UNSIGNED_INT, nullptr);
+		chunk.UnsetAttribArray();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 	m_textures[1]->Unbind();
 	ChunkShader.Unbind();
@@ -198,10 +173,12 @@ void Renderer::DrawWorld(const World& world)
 	glBindBuffer(GL_ARRAY_BUFFER, ChunkBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ChunkIndexBuffer);
 	auto& chunks = world.Chunks();
+	//ChunkData::SetAttribArray();
 	for (auto& chunk : chunks)
 	{
 		DrawChunk(chunk.second);
 	}
+	//ChunkData::UnsetAttribArray();
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

@@ -14,6 +14,7 @@
 void moveCamera(Camera& cam)
 {
     float speed = 50;
+    float rotationSpeed = 10;
     if (Input::GetKey(GLFW_KEY_LEFT_SHIFT))
         speed *= 10;
     if (Input::GetKey(GLFW_KEY_TAB))
@@ -31,18 +32,21 @@ void moveCamera(Camera& cam)
         movement.y++;
     if (Input::GetKey(GLFW_KEY_LEFT_CONTROL))
         movement.y--;
-    cam.m_transform.MoveForwardAbsoluteUp(movement * speed * .5f);
+    cam.m_transform.MoveForwardAbsoluteUp(movement * speed);
     // rotation
     Vector3 rotation;
-    if (Input::GetKey(GLFW_KEY_RIGHT))
-        rotation.y--;
-    if (Input::GetKey(GLFW_KEY_LEFT))
-        rotation.y++;
-    if (Input::GetKey(GLFW_KEY_UP))
-        rotation.x--;
-    if (Input::GetKey(GLFW_KEY_DOWN))
-        rotation.x++;
-    cam.m_transform.Rotate(rotation * speed);
+    Vector2 mouseMovement = Input::MousePositionDelta();
+    rotation.y = -mouseMovement.x;
+    rotation.x = mouseMovement.y;
+    //if (Input::GetKey(GLFW_KEY_RIGHT))
+    //    rotation.y--;
+    //if (Input::GetKey(GLFW_KEY_LEFT))
+    //    rotation.y++;
+    //if (Input::GetKey(GLFW_KEY_UP))
+    //    rotation.x--;
+    //if (Input::GetKey(GLFW_KEY_DOWN))
+    //    rotation.x++;
+    cam.m_transform.Rotate(rotation * rotationSpeed);
     //cam.m_transform.Rotate({ 0, 1, 0 });
 }
 
@@ -75,8 +79,9 @@ int main()
     }*/
     Camera gameCamera;
     gameCamera.m_transform.Position.z = -10;
+    gameCamera.m_transform.Position.y = 50;
     GameWindow window = GameWindow();
-    Input::SetWindow(window.Window());
+    Input::SetWindow(&window);
     window.Init(&gameCamera);
     //World::ActiveWorld()->LoadChunk({ x, y, z });
 
@@ -127,20 +132,22 @@ int main()
     /* Loop until the user closes the window */
     while (!window.ShouldClose())
     {
-        //Time::Timer someTimer("Something");
         Time::UpdateDeltaTime();
+
+        if (Input::GetKeyPressed(GLFW_KEY_ESCAPE))
+            Input::ToggleLockCurser();
+        //Time::Timer someTimer("Something");
         // update stuff
         moveCamera(gameCamera);
-        if (Input::GetKeyPressed(GLFW_KEY_ENTER))
+        if (Input::GetMousePressed(GLFW_MOUSE_BUTTON_1))
         {
             RaycastHit rayHit = World::ActiveWorld()->Raycast(gameCamera.m_transform.Position, gameCamera.m_transform.Forward(), 100);
             std::cout << "Rayhit: " << rayHit.hit << std::endl;
             if (rayHit.hit)
             {
-                std::cout << "Rayhit chunk: " << rayHit.pos.Chunk.x << " " << rayHit.pos.Chunk.y << " " << rayHit.pos.Chunk.z << std::endl;
-                std::cout << "Rayhit position: " << rayHit.pos.Position.x << " " << rayHit.pos.Position.y << " " << rayHit.pos.Position.z << std::endl;
+                //std::cout << "Rayhit chunk: " << rayHit.pos.Chunk.x << " " << rayHit.pos.Chunk.y << " " << rayHit.pos.Chunk.z << std::endl;
+                //std::cout << "Rayhit position: " << rayHit.pos.Position.x << " " << rayHit.pos.Position.y << " " << rayHit.pos.Position.z << std::endl;
                 World::ActiveWorld()->RemoveBlock(rayHit.pos);
-
             }
         }
         
@@ -158,10 +165,10 @@ int main()
         //window.m_renderer.DrawText(posText, { -1.0f, -.7f }, {1, 1, 1, 1}, 0.05f, .005f);
         //std::string fwdText = "fwd " + std::to_string(gameCamera.m_transform.Forward().x) + " " + std::to_string(gameCamera.m_transform.Forward().y) + " " + std::to_string(gameCamera.m_transform.Forward().z);
         //window.m_renderer.DrawText(fwdText, { -1.0f, -.8f }, { 1, 1, 1, 1 }, 0.05f, .005f);
+        Input::Reset();
         window.SwapBuffer();
         //someTimer.Stop();
         //std::cout << "DeltaTime: " << Time::DeltaTime << std::endl;
-            
     }
     
     glfwTerminate();

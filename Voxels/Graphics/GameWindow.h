@@ -29,6 +29,7 @@ public:
 	inline int WindowIsRunning() { return m_windowRunning; }
 	inline bool ShouldClose() { return WindowIsRunning() || glfwWindowShouldClose(m_window); }
 	inline GLFWwindow* Window() { return m_window; }
+	inline Vector2 WindowSize() { return { (float)m_WindowWidth, (float)m_WindowHeight }; }
 
 private:
 	static void windowResizeCallback(GLFWwindow* window, int width, int height)

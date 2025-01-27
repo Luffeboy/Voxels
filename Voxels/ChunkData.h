@@ -32,10 +32,10 @@ struct ChunkData
 {
 private:
 	static bool TransparentBlockDefinitions[BlockType::Count];
-	unsigned int m_buffer;
-	unsigned int m_indexBuffer;
-	unsigned int m_transparentBuffer;
-	unsigned int m_transparentIndexBuffer;
+	mutable unsigned int m_buffer;
+	mutable unsigned int m_indexBuffer;
+	mutable unsigned int m_transparentBuffer;
+	mutable unsigned int m_transparentIndexBuffer;
 
 	mutable size_t m_vertexCount = 0;
 	mutable size_t m_indeciesCount = 0;
@@ -50,18 +50,18 @@ public: // per object stuff
 	//std::vector<Vertex> verticies;
 	ChunkData() { std::cout << "ChunkData default constructor called... why?" << std::endl; }
 
-	ChunkData(Vector3 offset) : Blocks(new BlockType[ChunkWidth * ChunkHeight * ChunkWidth]), m_vertexCount(0), m_indeciesCount(0), m_offset(offset), m_offsetInt(offset.ToVector3Int())
+	ChunkData(Vector3 offset) : Blocks(new BlockType[ChunkWidth * ChunkHeight * ChunkWidth]), m_buffer(-1), m_indexBuffer(-1), m_transparentBuffer(-1), m_transparentIndexBuffer(-1), m_vertexCount(0), m_indeciesCount(0), m_offset(offset), m_offsetInt(offset.ToVector3Int())
 	{
 		m_offsetForRendering = m_offset;
 		m_offsetForRendering.x *= ChunkWidth * BlockSize;
 		m_offsetForRendering.y *= ChunkHeight * BlockSize;
 		m_offsetForRendering.z *= ChunkWidth * BlockSize;
 		//Blocks = new BlockType[ChunkWidth * ChunkHeight * ChunkWidth];
-		glGenBuffers(1, &m_buffer);
-		glGenBuffers(1, &m_indexBuffer);
+		//glGenBuffers(1, &m_buffer);
+		//glGenBuffers(1, &m_indexBuffer);
 
-		glGenBuffers(1, &m_transparentBuffer);
-		glGenBuffers(1, &m_transparentIndexBuffer);
+		//glGenBuffers(1, &m_transparentBuffer);
+		//glGenBuffers(1, &m_transparentIndexBuffer);
 
 		// get save data?
 
@@ -161,8 +161,31 @@ public: // per object stuff
 	}
 	void CreateMesh();
 
-	inline unsigned int Buffer() const { return m_buffer; }
-	inline unsigned int TransparentBuffer() const { return m_transparentBuffer; }
+	inline void TryGenBuffer() const
+	{
+		if (m_buffer == -1)
+		{
+			glGenBuffers(1, &m_buffer);
+			glGenBuffers(1, &m_indexBuffer);
+		}
+	}
+
+	inline void TryGenTransparentBuffer() const
+	{
+		if (m_transparentBuffer == -1)
+		{
+			glGenBuffers(1, &m_transparentBuffer);
+			glGenBuffers(1, &m_transparentIndexBuffer);
+		}
+	}
+
+	inline unsigned int Buffer() const {
+		return m_buffer;
+	}
+	inline unsigned int TransparentBuffer() const 
+	{
+		return m_transparentBuffer;
+	}
 	inline unsigned int IndexBuffer() const { return m_indexBuffer; }
 	inline unsigned int TransparentIndexBuffer() const { return m_transparentIndexBuffer; }
 

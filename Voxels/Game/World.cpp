@@ -116,7 +116,7 @@ RaycastHit World::Raycast(const Vector3& startPos, const Vector3& rayDir, float 
     }
 
     // If no hit was found within maxDist
-    return RaycastHit();  // Returning default (no-hit) result
+    return RaycastHit(false, { currentPos }, 0);  // Returning default (no-hit) result
 }
 
 void World::RemoveBlock(const PositionAndChunk& pos) const

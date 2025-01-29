@@ -6,6 +6,9 @@
 #include <thread>
 #include <queue>
 #include "RaycastHit.h"
+#include "../Camera.h"
+
+class Entity;
 
 constexpr int MaxChunkGenerationThreads = 3;
 class World
@@ -13,6 +16,11 @@ class World
 private:
 	mutable std::map<int64_t, ChunkData> m_Chunks;
 	mutable std::mutex m_loadChunksMutex;
+	mutable std::vector<Entity*> m_entities;
+	mutable std::vector<Entity*> m_entitiesToAdd;
+	mutable std::vector<Entity*> m_entitiesToRemove;
+	mutable std::vector<Entity*> m_entitiesToRemoveAndDelete;
+	mutable Camera m_camera;
 	static World* m_ActiveWorld;
 
 private:
@@ -47,6 +55,7 @@ private:
 		}
 	};
 public:
+	Camera& GetCamera() const { return m_camera; }
 	void UnloadChunk(const Vector3Int& position) const;
 	void LoadChunk(const Vector3Int& position) const
 	{
@@ -96,6 +105,20 @@ public:
 	RaycastHit Raycast(const Vector3& startPos, const Vector3& rayDir, float maxDist = 10.0f) const;
 	void RemoveBlock(const PositionAndChunk& pos) const;
 	void AddBlock(const PositionAndChunk& pos, BlockType block) const;
+	void UpdateEntities() const;
+	inline void AddEntity(Entity* entity) const
+	{
+		m_entitiesToAdd.push_back(entity);
+	}
+	inline void RemoveEntity(Entity* entity) const
+	{
+		m_entitiesToRemove.push_back(entity);
+	}
+	inline void RemoveAndDeleteEntity(Entity* entity) const
+	{
+		m_entitiesToRemoveAndDelete.push_back(entity);
+	}
+
 	
 	static const World* ActiveWorld() { return m_ActiveWorld; }
 	const std::map<int64_t, ChunkData>& Chunks() const { return m_Chunks; }
@@ -243,6 +266,27 @@ private:
 		return false;
 	}
 
+
+	inline void InternalAddEntity(Entity* entity) const
+	{
+		m_entities.push_back(entity);
+	}
+	inline void InternalRemoveEntity(Entity* entity) const
+	{
+		for (int i = 0; i < m_entities.size(); i++)
+			if (m_entities[i] == entity)
+			{
+				m_entities.erase(m_entities.begin() + i);
+				break;
+			}
+	}
+	inline void InternalRemoveAndDeleteEntity(Entity* entity) const
+	{
+		InternalRemoveEntity(entity);
+		delete(entity);
+	}
+
+
 public:
 	~World() // just gonna join all the threads, before closing the program
 	{
@@ -250,5 +294,8 @@ public:
 		{
 			m_chunkGenerationThreads[i].t.join();
 		}
+		for (int i = 0; i < m_entities.size(); i++)
+			delete(m_entities[i]);
+		
 	}
 };

@@ -378,6 +378,13 @@ public:
 		m_rotation.z += amount.z * Time::DeltaTime;
 		CalculateForward();
 	}
+	void SetRotation(const Vector3& rot)
+	{
+		m_rotation.x = rot.x;
+		m_rotation.y = rot.y;
+		m_rotation.z = rot.z;
+		CalculateForward();
+	}
 	/// <summary>
 	/// Automatically multiplies by deltatime
 	/// </summary>

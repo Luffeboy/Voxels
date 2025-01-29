@@ -176,6 +176,8 @@
     <ClInclude Include="CertainDefines.h" />
     <ClInclude Include="ChunkData.h" />
     <ClInclude Include="External\stb_image.h" />
+    <ClInclude Include="Game\Entities\Entity.h" />
+    <ClInclude Include="Game\Entities\Player.h" />
     <ClInclude Include="Game\RaycastHit.h" />
     <ClInclude Include="Game\World.h" />
     <ClInclude Include="Game\WorldGeneration\PerlinNoise.h" />
@@ -185,6 +187,7 @@
     <ClInclude Include="Graphics\TextureReader.h" />
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>

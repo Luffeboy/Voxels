@@ -1,7 +1,26 @@
 #include "World.h"
 #include <thread>
+#include "Entities/Entity.h"
 
 World* World::m_ActiveWorld = new World();
+
+void World::UpdateEntities() const
+{
+    for (int i = 0; i < m_entities.size(); i++)
+        m_entities[i]->Update();
+    // add new entities - we add first, just in case something spawn, and die in the same update.
+    for (int i = 0; i < m_entitiesToAdd.size(); i++)
+        InternalAddEntity(m_entitiesToAdd[i]);
+    m_entitiesToAdd.clear();
+    // delete old entities
+    for (int i = 0; i < m_entitiesToRemove.size(); i++)
+        InternalRemoveEntity(m_entitiesToRemove[i]);
+    m_entitiesToRemove.clear();
+
+    for (int i = 0; i < m_entitiesToRemoveAndDelete.size(); i++)
+        InternalRemoveAndDeleteEntity(m_entitiesToRemoveAndDelete[i]);
+    m_entitiesToRemoveAndDelete.clear();
+}
 
 void World::LoadChunkWithMeshNow(const Vector3Int& position) const
 {

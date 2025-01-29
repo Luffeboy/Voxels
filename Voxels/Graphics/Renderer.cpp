@@ -153,6 +153,8 @@ void Renderer::DrawChunk(const ChunkData& chunk)
 	// transparent
 	if (chunk.TransparentVertexCount() != 0)
 	{
+		glDepthMask(GL_FALSE);
+
 		glBindBuffer(GL_ARRAY_BUFFER, chunk.TransparentBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.TransparentIndexBuffer());
 		chunk.SetAttribArray();
@@ -161,6 +163,8 @@ void Renderer::DrawChunk(const ChunkData& chunk)
 		chunk.UnsetAttribArray();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glDepthMask(GL_TRUE);
 	}
 
 	m_textures[1]->Unbind();

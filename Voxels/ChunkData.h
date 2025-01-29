@@ -153,10 +153,10 @@ public: // per object stuff
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glDeleteBuffers(1, &m_buffer);
-		glDeleteBuffers(1, &m_indexBuffer);
-		glDeleteBuffers(1, &m_transparentBuffer);
-		glDeleteBuffers(1, &m_transparentIndexBuffer);
+		if (m_buffer != -1) glDeleteBuffers(1, &m_buffer);
+		if (m_indexBuffer != -1) glDeleteBuffers(1, &m_indexBuffer);
+		if (m_transparentBuffer != -1) glDeleteBuffers(1, &m_transparentBuffer);
+		if (m_transparentIndexBuffer != -1) glDeleteBuffers(1, &m_transparentIndexBuffer);
 		delete[](Blocks);
 	}
 	void CreateMesh();
@@ -204,6 +204,7 @@ public: // per object stuff
 
 	BlockType GetBlock(Vector3Int pos);
 	void DeleteBlock(const Vector3Int& pos);
+	void AddBlock(const Vector3Int& pos, BlockType block);
 	inline BlockType GetBlockInChunk(Vector3Int pos)
 	{
 		return Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)];

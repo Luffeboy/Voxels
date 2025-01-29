@@ -145,9 +145,16 @@ int main()
             std::cout << "Rayhit: " << rayHit.hit << std::endl;
             if (rayHit.hit)
             {
-                //std::cout << "Rayhit chunk: " << rayHit.pos.Chunk.x << " " << rayHit.pos.Chunk.y << " " << rayHit.pos.Chunk.z << std::endl;
-                //std::cout << "Rayhit position: " << rayHit.pos.Position.x << " " << rayHit.pos.Position.y << " " << rayHit.pos.Position.z << std::endl;
                 World::ActiveWorld()->RemoveBlock(rayHit.pos);
+            }
+        }
+        if (Input::GetMousePressed(GLFW_MOUSE_BUTTON_2))
+        {
+            RaycastHit rayHit = World::ActiveWorld()->Raycast(gameCamera.m_transform.Position, gameCamera.m_transform.Forward(), 100);
+            std::cout << "Rayhit: " << rayHit.hit << std::endl;
+            if (rayHit.hit)
+            {
+                World::ActiveWorld()->AddBlock(rayHit.NextToPosition(), BlockType::Dirt);
             }
         }
         

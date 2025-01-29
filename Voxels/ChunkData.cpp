@@ -63,7 +63,12 @@ BlockType ChunkData::GetBlock(Vector3Int pos)
 
 void ChunkData::DeleteBlock(const Vector3Int& pos)
 {
-	Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)] = BlockType::Air;
+	AddBlock(pos, BlockType::Air);
+	//Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)] = BlockType::Air;
+}
+void ChunkData::AddBlock(const Vector3Int& pos, BlockType block)
+{
+	Blocks[xyzToChunkIndex(pos.x, pos.y, pos.z)] = block;
 }
 
 

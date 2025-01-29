@@ -95,7 +95,7 @@ public:
 	BlockType GetBlockData(const Vector3& pos) const;
 	RaycastHit Raycast(const Vector3& startPos, const Vector3& rayDir, float maxDist = 10.0f) const;
 	void RemoveBlock(const PositionAndChunk& pos) const;
-
+	void AddBlock(const PositionAndChunk& pos, BlockType block) const;
 	
 	static const World* ActiveWorld() { return m_ActiveWorld; }
 	const std::map<int64_t, ChunkData>& Chunks() const { return m_Chunks; }

@@ -58,9 +58,9 @@ RaycastHit World::Raycast(const Vector3& startPos, const Vector3& rayDir, float 
     stepSize.y = (dir.y > 0) ? 1.0f : -1.0f;
     stepSize.z = (dir.z > 0) ? 1.0f : -1.0f;
     uint8_t nextTo = 0;
-    uint8_t nextToX = (dir.x > 0) ? (1 << 0) : (1 << 1);
-    uint8_t nextToY = (dir.y > 0) ? (1 << 2) : (1 << 3);
-    uint8_t nextToZ = (dir.z > 0) ? (1 << 4) : (1 << 5);
+    uint8_t nextToX = (dir.x > 0) ? (1 << 1) : (1 << 0);
+    uint8_t nextToY = (dir.y > 0) ? (1 << 3) : (1 << 2);
+    uint8_t nextToZ = (dir.z > 0) ? (1 << 5) : (1 << 4);
 
     // Calculate the initial tMax values for each axis (how far we need to go to hit the next voxel boundary)
     Vector3 tMax;
@@ -121,9 +121,48 @@ RaycastHit World::Raycast(const Vector3& startPos, const Vector3& rayDir, float 
 
 void World::RemoveBlock(const PositionAndChunk& pos) const
 {
-    auto* chunk = GetChunk(pos.Chunk);
-    chunk->DeleteBlock(pos.Position);
+    AddBlock(pos, BlockType::Air);
+    //ChunkData* chunk = GetChunk(pos.Chunk);
+    //chunk->DeleteBlock(pos.Position);
+    //// regenerate mesh
+    //LoadChunkMeshAsync(pos.Chunk);
+    //// check for edges, and then reload the neighbouring chunk
+    //// x
+    //if (pos.Position.x == 0)
+    //    LoadChunkMeshAsync({ pos.Chunk.x - 1, pos.Chunk.y, pos.Chunk.z });
+    //if (pos.Position.x == ChunkWidth - 1)
+    //    LoadChunkMeshAsync({ pos.Chunk.x + 1, pos.Chunk.y, pos.Chunk.z });
+    //// y
+    //if (pos.Position.y == 0)
+    //    LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y - 1, pos.Chunk.z });
+    //if (pos.Position.y == ChunkHeight - 1)
+    //    LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y + 1, pos.Chunk.z });
+    //// z
+    //if (pos.Position.z == 0)
+    //    LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y, pos.Chunk.z - 1 });
+    //if (pos.Position.z == ChunkWidth - 1)
+    //    LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y, pos.Chunk.z + 1 });
+}
+void World::AddBlock(const PositionAndChunk& pos, BlockType block) const
+{
+    ChunkData* chunk = GetChunk(pos.Chunk);
+    chunk->AddBlock(pos.Position, block);
     // regenerate mesh
     LoadChunkMeshAsync(pos.Chunk);
-    // check for borders
+    // check for edges, and then reload the neighbouring chunk
+    // x
+    if (pos.Position.x == 0)
+        LoadChunkMeshAsync({ pos.Chunk.x - 1, pos.Chunk.y, pos.Chunk.z });
+    if (pos.Position.x == ChunkWidth - 1)
+        LoadChunkMeshAsync({ pos.Chunk.x + 1, pos.Chunk.y, pos.Chunk.z });
+    // y
+    if (pos.Position.y == 0)
+        LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y - 1, pos.Chunk.z });
+    if (pos.Position.y == ChunkHeight - 1)
+        LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y + 1, pos.Chunk.z });
+    // z
+    if (pos.Position.z == 0)
+        LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y, pos.Chunk.z - 1 });
+    if (pos.Position.z == ChunkWidth - 1)
+        LoadChunkMeshAsync({ pos.Chunk.x, pos.Chunk.y, pos.Chunk.z + 1 });
 }
